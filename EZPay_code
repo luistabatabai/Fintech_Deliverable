@@ -1,0 +1,66 @@
+// SPDX-License-Identifier: MIT 
+// This liscence is a general requirement when writing Solidity coe
+pragma solidity ^0.8.0;  \\Version of the 
+
+/// @title PaymentSystem
+/// @dev The goal of this code is to implement a payment system with VAT and fee deductions, and tracks balances of involved parties
+contract PaymentSystem {
+    // This is the address where VAT amounts will be sent
+    address public governmentWallet;
+    // This is the address where fee amounts will be sent
+    address public companyWallet;
+    // Address of the contract deployer, the person who makes the payment
+    address public sender;
+
+    // Mapping to track balances of clients, merchants, government wallet, and company wallet. 
+    mapping(address => int256) public balances;
+
+    // Event emitted when a payment is made
+    event PaymentMade(address indexed client, address indexed merchant, uint256 amount);
+
+    // Event emitted after a payment with the updated and latest version of the updated balances of all parties
+    event Balances(
+        address client, 
+        int256 clientBalance, 
+        address merchant, 
+        int256 merchantBalance, 
+        address governmentWallet, 
+        int256 governmentBalance, 
+        address companyWallet, 
+        int256 companyBalance
+    );
+
+    /// @notice Constructor to initialize the contract with government and company wallet addresses
+    /// @param _governmentWallet Address of the government wallet
+    /// @param _companyWallet Address of the company wallet
+    constructor(address _governmentWallet, address _companyWallet) {
+        governmentWallet = _governmentWallet;
+        companyWallet = _companyWallet;
+        sender = msg.sender; // Here we store the address of the contract deployer
+    }
+
+    /// @notice Function to make a payment to a merchant
+    /// @dev Calculates VAT and fee, updates balances, and transfers the remaining amount to the merchant
+    /// @param merchant Address of the merchant to be paid
+    function makePayment(address payable merchant) external payable {
+        require(msg.value > 0, "Payment amount must be greater than zero");
+
+        uint256 totalAmount = msg.value;
+        uint256 vatAmount = (totalAmount * 21) / 100; // 21% VAT
+        uint256 feeAmount = (totalAmount * 1) / 100;  // 1% fee
+        uint256 merchantAmount = totalAmount - vatAmount - feeAmount; // Final amount that the merchant will receive
+
+        // Update balances in the mapping (Government merchant and company wallet balances increase, while the client sending balance decreases
+        balances[governmentWallet] += int256(vatAmount);
+        balances[companyWallet] += int256(feeAmount);
+        balances[merchant] += int256(merchantAmount);
+        balances[msg.sender] -= int256(totalAmount);
+
+        // Transfer the merchant amount
+        merchant.transfer(merchantAmount);
+
+        // Emit the payment events
+        emit PaymentMade(msg.sender, merchant, totalAmount);
+        emit Balances(msg.sender, balances[msg.sender], merchant, balances[merchant], governmentWallet, balances[governmentWallet], companyWallet, balances[companyWallet]);
+    }
+}

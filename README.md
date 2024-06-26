@@ -1,9 +1,9 @@
 # Fintech_Deliverable
-Solidity Code used in the execution of the Demo
+This is a brief explanation of the different functions and workings of the same Solidity Code that was used in the execution of the Demo, in the video attached in the deliverable
 
 # PaymentSystem
 
-## Overview
+## Working Overview
 `PaymentSystem` is a smart contract implemented in Solidity that facilitates payments between clients and merchants. It automatically deducts VAT and a fee, transferring the respective amounts to designated government and company wallets.
 
 ## Features
@@ -11,11 +11,11 @@ Solidity Code used in the execution of the Demo
 - Balance tracking for clients, merchants, government, and company wallets
 
 ## Installation
-To use this contract, deploy it on a compatible Ethereum network. It has been tested on Remix, so its use is recommended.
+If you want to test the working of this code, deploy it on a compatible Ethereum network. It has been tested on Remix, which is a testing platform within Ethereum, so its use is recommended.
 
 ## Usage
 1. Deploy the `PaymentSystem` contract with the addresses of the government and company wallets.
-2. Use the `makePayment` function to make payments to merchants. The function handles VAT and fee deductions automatically.
+2. Use the `makePayment` function to make payments to merchants. The function handles VAT and fee deductions automatically. You have to select the amount that you want to send. Currently you also have to input the merchant address (Copy it from the QR code), but this function will be automatized. 
 
 ## Functions used:
 
